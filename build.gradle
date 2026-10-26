@@ -29,11 +29,50 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-test {
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
+    finalizedBy 'testRunFinished'
 
     testLogging {
         events 'passed', 'skipped', 'failed'
         showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+}
+
+test {
+    useJUnitPlatform {
+        excludeTags 'intentional-failure'
+    }
+}
+
+tasks.register('topic3Task1', Test) {
+    group = 'verification'
+    description = 'Runs four assertion examples, including one intentional failure'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform {
+        includeTags 'topic3-task1'
+    }
+}
+
+tasks.register('topic3Task2', Test) {
+    group = 'verification'
+    description = 'Runs assertion checks for all twelve methods'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform {
+        includeTags 'topic3-task2'
+    }
+}
+
+tasks.register('testRunFinished') {
+    group = 'verification'
+    description = 'Prints a message after the tests finish'
+
+    doLast {
+        println 'Test run is over'
     }
 }
