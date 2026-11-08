@@ -18,6 +18,9 @@ java {
 dependencies {
     testImplementation platform('org.junit:junit-bom:6.1.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'io.rest-assured:rest-assured:6.3.0'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    testImplementation 'org.assertj:assertj-core:3.27.7'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -43,6 +46,7 @@ tasks.withType(Test).configureEach {
 test {
     useJUnitPlatform {
         excludeTags 'intentional-failure'
+        excludeTags 'api'
     }
 }
 
@@ -65,6 +69,20 @@ tasks.register('topic3Task2', Test) {
 
     useJUnitPlatform {
         includeTags 'topic3-task2'
+    }
+}
+
+tasks.register('apiTest', Test) {
+    group = 'verification'
+    description = 'Runs only REST Assured API tests against the running goods API'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    systemProperty 'api.baseUrl', System.getProperty('api.baseUrl', 'http://localhost:8080')
+    systemProperty 'api.user', System.getProperty('api.user', 'admin')
+    systemProperty 'api.password', System.getProperty('api.password', 'secret123')
+
+    useJUnitPlatform {
+        includeTags 'api'
     }
 }
 
