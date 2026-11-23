@@ -21,6 +21,8 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:6.3.0'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
     testImplementation 'org.assertj:assertj-core:3.27.7'
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.51.0'
+    testImplementation 'com.codeborne:selenide:7.19.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -47,6 +49,7 @@ test {
     useJUnitPlatform {
         excludeTags 'intentional-failure'
         excludeTags 'api'
+        excludeTags 'ui'
     }
 }
 
@@ -83,6 +86,28 @@ tasks.register('apiTest', Test) {
 
     useJUnitPlatform {
         includeTags 'api'
+    }
+}
+
+['uiTest': 'ui', 'seleniumTest': 'topic6-selenium',
+ 'selenideTest': 'topic6-selenide', 'webinarTest': 'topic6-webinar'].each { taskName, testTag ->
+    tasks.register(taskName, Test) {
+        group = 'verification'
+        description = "Runs SmartShop UI tests tagged ${testTag}"
+        testClassesDirs = sourceSets.test.output.classesDirs
+        classpath = sourceSets.test.runtimeClasspath
+        maxParallelForks = 1
+        systemProperty 'junit.jupiter.execution.parallel.enabled', 'false'
+        ['ui.baseUrl': 'http://localhost:8080', 'ui.user': 'admin',
+         'ui.password': 'secret123', 'ui.headless': 'true', 'ui.timeoutSeconds': '10'].each { key, fallback ->
+            systemProperty key, System.getProperty(key, fallback)
+        }
+        systemProperty 'selenide.reportsFolder', layout.buildDirectory.dir("reports/${taskName}/screenshots").get().asFile
+        // UI tests depend on an external application and must run on every invocation.
+        outputs.upToDateWhen { false }
+        useJUnitPlatform {
+            includeTags testTag
+        }
     }
 }
 
