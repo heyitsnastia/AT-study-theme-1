@@ -90,7 +90,8 @@ tasks.register('apiTest', Test) {
 }
 
 ['uiTest': 'ui', 'seleniumTest': 'topic6-selenium',
- 'selenideTest': 'topic6-selenide', 'webinarTest': 'topic6-webinar'].each { taskName, testTag ->
+ 'selenideTest': 'topic6-selenide', 'webinarTest': 'topic6-webinar',
+ 'topic7Test': 'topic7-lecture'].each { taskName, testTag ->
     tasks.register(taskName, Test) {
         group = 'verification'
         description = "Runs SmartShop UI tests tagged ${testTag}"

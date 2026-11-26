@@ -15,7 +15,7 @@ import static com.codeborne.selenide.Selenide.closeWebDriver;
 import static com.codeborne.selenide.Selenide.open;
 
 @Tag("ui")
-abstract class SelenideTestSupport {
+public abstract class SelenideTestSupport {
     protected final ProductFixtures products = new ProductFixtures();
 
     @BeforeEach
